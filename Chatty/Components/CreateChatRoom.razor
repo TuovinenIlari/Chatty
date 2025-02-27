@@ -1,0 +1,52 @@
+﻿@using Chatty.Components.Account
+@using Chatty.Data.Models
+@using Microsoft.AspNetCore.Identity
+
+@inject ChatRoomService ChatRoomService
+@inject NavigationManager NavigationManager
+@inject IdentityUserAccessor UserAccessor
+@inject UserManager<ApplicationUser> UserManager
+
+
+
+
+<EditForm Model="_roomModel" FormName="CreateChatRoom" OnValidSubmit="CreateRoom">
+        <div>
+            <label>Room Name:</label>
+            <InputText @bind-Value="_roomModel.RoomName" class="form-control" />
+            
+        </div>
+
+        <button type="submit" class="btn btn-primary">Create Room</button>
+    </EditForm>
+
+@code {
+    private ApplicationUser _user = default!;
+    private string? _userID;
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    [SupplyParameterFromForm]
+    private RoomModel _roomModel { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+        _userID = _user.Id;
+    }
+
+
+    private async Task CreateRoom()
+    {
+        Console.WriteLine("Create room?!?!?");
+
+        var newRoom = await ChatRoomService.CreateChatRoom(_roomModel.RoomName,_userID);
+        NavigationManager.NavigateTo($"/chat/{newRoom.ChatRoomId}");
+    }
+
+    public class RoomModel
+    {
+        public string RoomName { get; set; } = string.Empty;
+    }
+}

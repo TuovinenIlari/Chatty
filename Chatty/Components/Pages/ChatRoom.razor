@@ -1,0 +1,82 @@
+﻿@page "/chat/{RoomId:guid}"
+@using Chatty.Components.Account
+@using Chatty.Data.Models
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.SignalR.Client
+@rendermode InteractiveServer
+@inject ChatRoomService ChatRoomService
+@inject NavigationManager NavigationManager
+@inject IdentityUserAccessor UserAccessor
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+@implements IAsyncDisposable
+
+<h3>Chat Room: @RoomId</h3>
+
+<div style="height: 400px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
+    @foreach (var msg in messages)
+    {
+        <div>@msg</div>
+    }
+</div>
+<div>
+    <input @bind="messageInput" placeholder="Type a message..." style="width: 80%;" />
+    <button @onclick="Send">Send</button>
+</div>
+
+@code {
+    [Parameter]
+    public Guid RoomId { get; set; }
+
+
+    private ApplicationUser _user = default!;
+    private string? _userID;
+    private string? _UserName;
+
+    private HubConnection? hubConnection;
+    private List<string> messages = new List<string>();
+    private string? messageInput;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Get user Claims/AuthState to access user information from database
+        AuthenticationState authenticationState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var authState = authenticationState;
+        var userClaim = authState.User;
+        var user =  await UserManager.GetUserAsync(userClaim);
+        _userID = user.Id; //Add check if null and do something
+        _UserName = user.UserName;
+
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/chathub"))
+            .Build();
+
+        hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
+        {
+            var encodedMsg = $"{user}: {message}";
+            messages.Add(encodedMsg);
+            InvokeAsync(StateHasChanged);
+        });
+
+        await hubConnection.StartAsync();
+    }
+
+    private async Task Send()
+    {
+        Console.WriteLine("Send messages");
+        if (hubConnection is not null)
+        {
+            await hubConnection.SendAsync("SendMessage", _UserName, messageInput);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+}

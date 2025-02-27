@@ -8,7 +8,7 @@
         public string? PrivateChatKey { get; set; }
 
         // Navigation properties
-        public ICollection<ApplicationUser> ApplicationUsers { get; set; }
-        public ICollection<Message> Messages { get; set; }
+        public ICollection<ApplicationUser> ApplicationUsers { get; set; } = new List<ApplicationUser>();
+        public ICollection<Message> Messages { get; set; } = new List<Message>();
     }
 }

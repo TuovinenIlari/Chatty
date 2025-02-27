@@ -6,8 +6,8 @@ namespace Chatty.Data.Models
     public class ApplicationUser : IdentityUser
     {
         // Navigation properties
-        public ICollection<ChatRoom> ChatRooms { get; set; }
-        public ICollection<Message> Messages { get; set; }
+        public ICollection<ChatRoom> ChatRooms { get; set; } = new List<ChatRoom>();
+        public ICollection<Message> Messages { get; set; } = new List<Message>();
     }
 
 }

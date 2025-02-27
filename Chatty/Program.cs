@@ -2,6 +2,8 @@ using Chatty.Components;
 using Chatty.Components.Account;
 using Chatty.Data;
 using Chatty.Data.Models;
+using Chatty.Data.Services;
+using Chatty.Hubs;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -23,6 +25,8 @@ namespace Chatty
             builder.Services.AddScoped<IdentityUserAccessor>();
             builder.Services.AddScoped<IdentityRedirectManager>();
             builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+
+            builder.Services.AddScoped<ChatRoomService>();
 
             builder.Services.AddAuthentication(options =>
                 {
@@ -75,6 +79,8 @@ namespace Chatty
 
             // Add additional endpoints required by the Identity /Account Razor components.
             app.MapAdditionalIdentityEndpoints();
+
+            app.MapHub<ChatHub>("/chathub");
 
             app.Run();
         }
