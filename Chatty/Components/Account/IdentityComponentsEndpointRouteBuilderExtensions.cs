@@ -2,7 +2,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using Chatty.Components.Account.Pages;
 using Chatty.Components.Account.Pages.Manage;
-using Chatty.Data;
+using Chatty.Data.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;

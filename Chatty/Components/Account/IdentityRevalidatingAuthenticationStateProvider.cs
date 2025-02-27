@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using Chatty.Data;
+using Chatty.Data.Models;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Identity;

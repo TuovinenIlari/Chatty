@@ -1,4 +1,4 @@
-using Chatty.Data;
+using Chatty.Data.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace Chatty.Components.Account

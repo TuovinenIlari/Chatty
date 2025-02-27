@@ -1,6 +1,7 @@
 using Chatty.Components;
 using Chatty.Components.Account;
 using Chatty.Data;
+using Chatty.Data.Models;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
