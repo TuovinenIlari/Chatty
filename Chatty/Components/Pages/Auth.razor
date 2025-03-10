@@ -1,15 +1,45 @@
 ﻿@page "/auth"
 
+@using Chatty.Data.Models
 @using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Identity
 
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationStateProvider AuthStateProvider
 @attribute [Authorize]
 
 <PageTitle>Auth</PageTitle>
 
 <h1>You are authenticated</h1>
-<CreateChatRoom/>
+
+
 <AuthorizeView>
     Hello @context.User.Identity?.Name!
 
-    
+  @_userId
+
+
+  <JoinChatRoom userId="@_userId"></JoinChatRoom>
+
 </AuthorizeView>
+@code{
+    private ApplicationUser _user = default!;
+    private string? _userId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Get user Claims/AuthState to access user information from database
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var userClaim = authState.User;
+        var user = await UserManager.GetUserAsync(userClaim);
+       
+
+        if(user == null)
+        {
+            Console.WriteLine("User null:((");
+        }
+
+        _userId = user.Id; //Add check if null and do something
+    }
+}

@@ -21,19 +21,15 @@
     </EditForm>
 
 @code {
-    private ApplicationUser _user = default!;
-    private string? _userID;
-
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
+    [Parameter]
+    public string userId { get; set; }
 
     [SupplyParameterFromForm]
     private RoomModel _roomModel { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
-        _user = await UserAccessor.GetRequiredUserAsync(HttpContext);
-        _userID = _user.Id;
+    
     }
 
 
@@ -41,7 +37,7 @@
     {
         Console.WriteLine("Create room?!?!?");
 
-        var newRoom = await ChatRoomService.CreateChatRoom(_roomModel.RoomName,_userID);
+        var newRoom = await ChatRoomService.CreateChatRoom(_roomModel.RoomName,userId);
         NavigationManager.NavigateTo($"/chat/{newRoom.ChatRoomId}");
     }
 

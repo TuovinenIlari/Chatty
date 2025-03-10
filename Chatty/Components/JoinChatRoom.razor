@@ -1,0 +1,61 @@
+﻿@page "/joinroom"
+@using Chatty.Components.Account
+@using Chatty.Data.Models
+@using Microsoft.AspNetCore.Identity
+@inject NavigationManager Navigation
+@inject ChatRoomService ChatRoomService
+@inject IdentityUserAccessor UserAccessor
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationStateProvider AuthStateProvider
+@rendermode InteractiveServer
+
+<div class="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-lg">
+    <h3 class="text-2xl font-bold text-gray-800 mb-6">💬 Available Chat Rooms</h3>
+
+    @if (chatRooms is null)
+    {
+        <p class="text-gray-500 text-center">Loading...</p>
+    }
+    else if (chatRooms.Count == 0)
+    {
+        <p class="text-gray-500 text-center">No chat rooms available.</p>
+    }
+    else
+    {
+        <div class="space-y-4">
+            @foreach (var room in chatRooms)
+            {
+                <div class="flex justify-between items-center p-4 bg-gray-100 border border-gray-300 rounded-lg shadow-sm hover:shadow-md transition">
+                    <div>
+                        <p class="text-lg font-semibold text-gray-900">@room.Name</p>
+                        <p class="text-sm text-gray-600">ID: @room.ChatRoomId</p>
+                    </div>
+                    <button @onclick="() => JoinRoom(room.ChatRoomId)"
+                            class="px-5 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
+                        Join
+                    </button>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string userId { get; set; }
+
+    private List<ChatRoom> chatRooms = new();
+    private ApplicationUser _user = default!;
+    //private string? _userId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        chatRooms = await ChatRoomService.GetUserChatRoomsAsync(userId);
+    }
+
+    private void JoinRoom(Guid roomId)
+    {
+        Console.WriteLine($"Navigating to chat room: {roomId}");
+        Navigation.NavigateTo($"/chat/{roomId}");
+    }
+}

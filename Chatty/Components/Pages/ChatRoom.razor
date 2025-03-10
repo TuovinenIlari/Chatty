@@ -1,9 +1,15 @@
 ﻿@page "/chat/{RoomId:guid}"
+
+@attribute [Authorize]
+
 @using Chatty.Components.Account
 @using Chatty.Data.Models
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.SignalR.Client
+
 @rendermode InteractiveServer
+
 @inject ChatRoomService ChatRoomService
 @inject NavigationManager NavigationManager
 @inject IdentityUserAccessor UserAccessor
@@ -12,17 +18,41 @@
 @inject NavigationManager Navigation
 @implements IAsyncDisposable
 
-<h3>Chat Room: @RoomId</h3>
+<div class="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-lg">
+    <h3 class="text-2xl font-bold text-gray-800 mb-4">💬 Chat Room: @_RoomName</h3>
 
-<div style="height: 400px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
-    @foreach (var msg in messages)
-    {
-        <div>@msg</div>
-    }
-</div>
-<div>
-    <input @bind="messageInput" placeholder="Type a message..." style="width: 80%;" />
-    <button @onclick="Send">Send</button>
+    <!-- Outer container with border/background -->
+    <div class="border border-gray-300 rounded-lg bg-gray-50 shadow-inner">
+        <!-- Inner container with a fixed height -->
+        <div class="h-80 overflow-y-auto p-4">
+            @if (messages is null || messages.Count == 0)
+            {
+                <p class="text-gray-500 text-center">No messages yet. Start the conversation!</p>
+            }
+            else
+            {
+                @foreach (var msg in messages)
+                {
+                    <div class="p-2 mb-2 bg-white border rounded-md shadow-sm">
+                        @msg
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+    <!-- Input area for sending messages -->
+    <div class="mt-4 flex items-center space-x-3">
+        <input @bind="messageInput"
+               placeholder="Type a message..."
+               class="flex-1 px-4 py-2 border border-gray-300 rounded-lg shadow-sm
+                   focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <button @onclick="Send"
+                class="px-5 py-2 bg-blue-600 text-white rounded-lg
+                   hover:bg-blue-700 transition">
+            Send
+        </button>
+    </div>
 </div>
 
 @code {
@@ -33,6 +63,7 @@
     private ApplicationUser _user = default!;
     private string? _userID;
     private string? _UserName;
+    private string? _RoomName;
 
     private HubConnection? hubConnection;
     private List<string> messages = new List<string>();
@@ -42,8 +73,7 @@
     protected override async Task OnInitializedAsync()
     {
         // Get user Claims/AuthState to access user information from database
-        AuthenticationState authenticationState = await AuthStateProvider.GetAuthenticationStateAsync();
-        var authState = authenticationState;
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var userClaim = authState.User;
         var user =  await UserManager.GetUserAsync(userClaim);
         _userID = user.Id; //Add check if null and do something
@@ -60,7 +90,27 @@
             InvokeAsync(StateHasChanged);
         });
 
+        // Handle when the room name is sent from the server
+        hubConnection.On<string>("RoomName", roomName =>
+        {
+            Console.WriteLine($"Received room name from server: {roomName}");
+            _RoomName = roomName;
+            InvokeAsync(StateHasChanged);
+        });
+
+        // Handle any errors
+        hubConnection.On<string>("Error", errorMessage =>
+        {
+            // TODO: implement error or something
+            Console.WriteLine(errorMessage);
+            
+        });
+
+        // Start the connection
         await hubConnection.StartAsync();
+
+        
+        await hubConnection.SendAsync("JoinRoom",RoomId);
     }
 
     private async Task Send()
@@ -68,7 +118,7 @@
         Console.WriteLine("Send messages");
         if (hubConnection is not null)
         {
-            await hubConnection.SendAsync("SendMessage", _UserName, messageInput);
+            await hubConnection.SendAsync("SendMessage", _UserName, messageInput,RoomId);
         }
     }
 
