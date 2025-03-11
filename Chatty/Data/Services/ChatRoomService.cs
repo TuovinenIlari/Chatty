@@ -1,31 +1,33 @@
 ﻿using Chatty.Data.Models;
+using Chatty.Data.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Chatty.Data.Services
 {   //TODO: Validation
     public class ChatRoomService
     {
-        private readonly IServiceScopeFactory _scopeFactory;
+        private IMessageRepository _messageRepository;
+        private IChatRoomRepository _chatRoomRepository;
+        private IApplicationUserRepository _userRepository;
 
-        public ChatRoomService(IServiceScopeFactory scopeFactory)
+        public ChatRoomService(
+            IMessageRepository messageRepository,
+            IChatRoomRepository chatRoomRepository,
+            IApplicationUserRepository userRepository)
         {
-            _scopeFactory = scopeFactory;
+            _messageRepository = messageRepository;
+            _chatRoomRepository = chatRoomRepository;
+            _userRepository = userRepository;
         }
         public async Task<List<ChatRoom>> GetUserChatRoomsAsync(string userId)
         {
-            using var scope = _scopeFactory.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-          return  await dbContext.ChatRooms
-                    .Where(c => c.ApplicationUsers.Select(u => u.Id).Contains(userId))
-                    .ToListAsync();
+            var chatrooms = await _chatRoomRepository.GetUserChatRooms(userId);
+            return chatrooms;
         }
 
         public async Task<ChatRoom> CreateChatRoom(string name, string creatorId)
         {
-            using var scope = _scopeFactory.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
+            
             var chatRoom = new ChatRoom
             {
                 ChatRoomId = Guid.NewGuid(),
@@ -33,23 +35,16 @@ namespace Chatty.Data.Services
                 CreatedAt = DateTime.UtcNow
             };
             // Add new chatroom to database
-             dbContext.Add(chatRoom);
-
-            // Find user who created chatroom from database
-            var user = dbContext.Users.First(u => u.Id == creatorId);
+            var newChatroom =  await _chatRoomRepository.CreateChatRoom(chatRoom);
             // Add relationship
-            user.ChatRooms.Add(chatRoom);
-            
-            await dbContext.SaveChangesAsync();
+            await _userRepository.AddRoomRelationShip(chatRoom, creatorId);
 
             return chatRoom;   
         }
         public async Task<string> GetChatRoom(Guid chatRoomId)
         {
-            using var scope = _scopeFactory.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-            var chatRoom = await dbContext.ChatRooms.FindAsync(chatRoomId);
+            var chatRoom = await _chatRoomRepository.GetChatRoomById(chatRoomId);
 
             if (chatRoom == null)
             {

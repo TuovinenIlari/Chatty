@@ -7,21 +7,16 @@ namespace Chatty.Data.Repositories.Implementations
 {
     public class MessageRepository : IMessageRepository
     {
-        private readonly IServiceScopeFactory _scopeFactory;
+        private readonly ApplicationDbContext _dbcontext;
 
-        public MessageRepository(IServiceScopeFactory scopeFactory)
+        public MessageRepository(ApplicationDbContext dbContext)
         {
-            _scopeFactory = scopeFactory;
+            _dbcontext = dbContext;
         }
-        public Task AddMessage(Message message)
+        public async Task AddMessage(Message message)
         {
-            using var scope = _scopeFactory.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-            dbContext.Add(message);
-            dbContext.SaveChanges();
-
-            throw new NotImplementedException();
+            _dbcontext.Messages.Add(message);
+            await _dbcontext.SaveChangesAsync();
         }
 
         public Task DeleteMessage(Message message)
@@ -29,12 +24,9 @@ namespace Chatty.Data.Repositories.Implementations
             throw new NotImplementedException();
         }
 
-        public async Task<Message> GetMessageById(string id)
+        public async Task<Message> GetMessageById(Guid id)
         {
-            using var scope = _scopeFactory.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-            var message = await dbContext.Messages.FindAsync(id);
+            var message = await _dbcontext.Messages.FindAsync(id);
 
             if (message == null) 
             {
@@ -47,17 +39,14 @@ namespace Chatty.Data.Repositories.Implementations
         public async Task<List<Message>> GetRoomMessages(Guid roomId)
         {
 
-            using var scope = _scopeFactory.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-            var messages = await dbContext.Messages
-                                          .Where(m => m.ChatRoom.ChatRoomId == roomId)
-                                          .ToListAsync();
+            var messages = await _dbcontext.Messages
+                                 .Where(m => m.ChatRoom.ChatRoomId == roomId)
+                                 .ToListAsync();
 
             return messages;
         }
 
-        public Task<List<Message>> GetUserMessages(string userId)
+        public Task<List<Message>> GetUserMessages(Guid userId)
         {
             throw new NotImplementedException();
         }

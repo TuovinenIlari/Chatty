@@ -2,6 +2,8 @@ using Chatty.Components;
 using Chatty.Components.Account;
 using Chatty.Data;
 using Chatty.Data.Models;
+using Chatty.Data.Repositories.Implementations;
+using Chatty.Data.Repositories.Interfaces;
 using Chatty.Data.Services;
 using Chatty.Hubs;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -26,8 +28,6 @@ namespace Chatty
             builder.Services.AddScoped<IdentityRedirectManager>();
             builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
-            builder.Services.AddScoped<ChatRoomService>();
-
             builder.Services.AddAuthentication(options =>
                 {
                     options.DefaultScheme = IdentityConstants.ApplicationScheme;
@@ -37,8 +37,16 @@ namespace Chatty
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString), ServiceLifetime.Scoped);
+                options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+            builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+            builder.Services.AddScoped<IChatRoomRepository, ChatRoomRepository>();
+            builder.Services.AddScoped<IApplicationUserRepository, ApplicationUserRepository>();
+
+            builder.Services.AddScoped<ChatRoomService>();
+
+
 
             builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>()

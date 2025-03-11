@@ -8,48 +8,39 @@ namespace Chatty.Data.Repositories.Implementations
 
     public class ChatRoomRepository : IChatRoomRepository
     {
-        private readonly IServiceScopeFactory _scopeFactory;
+        private readonly ApplicationDbContext _dbcontext;
 
-        public ChatRoomRepository(IServiceScopeFactory scopeFactory)
+        public ChatRoomRepository(ApplicationDbContext dbContext)
         {
-            _scopeFactory = scopeFactory;
+            _dbcontext = dbContext;
         }
         public async Task<ChatRoom> CreateChatRoom(ChatRoom chatroom)
         {
-            using var scope = _scopeFactory.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            _dbcontext.Add(chatroom);
 
-            dbContext.Add(chatroom);
-
-            await dbContext.SaveChangesAsync();
+            await _dbcontext.SaveChangesAsync();
 
             return chatroom;
         }
 
         public async Task DeleteChatRoom(string chatRoomId)
         {
-            using var scope = _scopeFactory.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-            var chatRoom = await dbContext.ChatRooms.FindAsync(chatRoomId);
+            var chatRoom = await _dbcontext.ChatRooms.FindAsync(chatRoomId);
 
             if (chatRoom == null)
             {
                 throw new KeyNotFoundException($"ChatRoom with id {chatRoomId} not found.");
             }
 
-            dbContext.Remove(chatRoom);
+            _dbcontext.Remove(chatRoom);
 
-            await dbContext.SaveChangesAsync();
+            await _dbcontext.SaveChangesAsync();
 
         }
 
-        public async Task<ChatRoom> GetChatRoomById(string chatRoomId)
+        public async Task<ChatRoom> GetChatRoomById(Guid chatRoomId)
         {
-            using var scope = _scopeFactory.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-            var chatRoom = await dbContext.ChatRooms.FindAsync(chatRoomId);
+            var chatRoom = await _dbcontext.ChatRooms.FindAsync(chatRoomId);
 
             if (chatRoom == null)
             {
@@ -66,10 +57,7 @@ namespace Chatty.Data.Repositories.Implementations
 
         public async Task<List<ChatRoom>> GetUserChatRooms(string userId)
         {
-            using var scope = _scopeFactory.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            
-            var chatRooms = await dbContext.ChatRooms
+            var chatRooms = await _dbcontext.ChatRooms
                             .Where(c => c.ApplicationUsers.Select(u => u.Id).Contains(userId))
                             .ToListAsync();
 

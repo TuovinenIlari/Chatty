@@ -6,7 +6,7 @@ namespace Chatty.Data.Repositories.Interfaces
     {
         Task<List<ChatRoom>> GetUserChatRooms(string userId);
         Task<ChatRoom> CreateChatRoom(ChatRoom chatRoom);
-        Task<ChatRoom> GetChatRoomById(string chatRoomId);
+        Task<ChatRoom> GetChatRoomById(Guid chatRoomId);
         Task<ChatRoom> GetChatRoomByName(string roomName);
         Task DeleteChatRoom(string chatRoomId);
     }

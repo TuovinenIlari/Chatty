@@ -20,7 +20,15 @@
   @_userId
 
 
-  <JoinChatRoom userId="@_userId"></JoinChatRoom>
+    @if (_userId != null)
+    {
+        <CreateChatRoom userId="@_userId"></CreateChatRoom>
+        <JoinChatRoom userId="@_userId"></JoinChatRoom>
+    }
+    else
+    {
+        <p>User ID not available</p>
+    }
 
 </AuthorizeView>
 @code{

@@ -7,8 +7,8 @@ namespace Chatty.Data.Repositories.Interfaces
         public Task AddMessage(Message message);
         public Task UpdateMessage(Message message);
         public Task DeleteMessage(Message message);
-        public Task<Message> GetMessageById(string id);
-        public Task<List<Message>> GetUserMessages(string userId);
+        public Task<Message> GetMessageById(Guid id);
+        public Task<List<Message>> GetUserMessages(Guid userId);
         public Task<List<Message>> GetRoomMessages(Guid roomId);
     }
 }
