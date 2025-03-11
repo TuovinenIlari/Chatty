@@ -15,9 +15,4 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Data\Repositories\Interfaces\" />
-    <Folder Include="Data\Repositories\Implementations\" />
-  </ItemGroup>
-
 </Project>
