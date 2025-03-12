@@ -55,12 +55,3 @@ steps:
     ArtifactName: 'AzureTest'
     publishLocation: 'Container'
 
-- task: AzureWebApp@1
-  name: 'DeployToAzure'
-  displayName: 'Deploy to Azure Web App'
-  inputs:
-    azureSubscription: 'Azure for Students(0f566da7-de41-40ef-b21a-305f97cd0396)'
-    appType: 'webApp'
-    appName: 'chatty'
-    package: '$(Build.ArtifactStagingDirectory)'
-    deploymentMethod: 'auto'
