@@ -34,7 +34,7 @@ steps:
   displayName: 'Run tests'
   inputs:
     command: 'test'
-    projects: '$(solution)/Chatty.UnitTests/Chatty.UnitTests.csproj'
+    projects: 'Chatty.UnitTests/Chatty.UnitTests.csproj'
     arguments: '--configuration $(BuildConfiguration)'
 
 - task: DotNetCoreCLI@2
