@@ -1,4 +1,5 @@
 # Starter pipeline
+
 # Start with a minimal pipeline that you can customize to build and deploy your code.
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
@@ -53,3 +54,13 @@ steps:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'AzureTest'
     publishLocation: 'Container'
+
+- task: AzureWebApp@1
+  name: 'DeployToAzure'
+  displayName: 'Deploy to Azure Web App'
+  inputs:
+    azureSubscription: 'Azure for Students(0f566da7-de41-40ef-b21a-305f97cd0396)'
+    appType: 'webApp'
+    appName: 'chatty'
+    package: '$(Build.ArtifactStagingDirectory)'
+    deploymentMethod: 'auto'
