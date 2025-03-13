@@ -43,7 +43,7 @@ steps:
   displayName: 'Publish'
   inputs:
     command: 'publish'
-    publishWebProjects: true
+    publishWebProjects: false
     arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
     zipAfterPublish: false
     
@@ -52,6 +52,6 @@ steps:
   displayName: 'Publish Build Artifacts'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'AzureTest'
+    ArtifactName: 'ChattyArtifact'
     publishLocation: 'Container'
 
