@@ -17,7 +17,7 @@ variables:
   buildConfiguration: 'Release'
   solution: '**/Chatty.sln'
   project: '**/Chatty/Chatty.csproj'
-  DatabaseConnectionString: 'Server=localhost//SQLExpress;Database=ChattyDb;Trusted_Connection=True;TrustServerCertificate=true;'
+  DatabaseConnectionString: 'Server=localhost\\SQLExpress;Database=ChattyDb;Trusted_Connection=True;TrustServerCertificate=true;'
 
 steps:
 - task: NuGetToolInstaller@1
@@ -50,7 +50,7 @@ steps:
   inputs:
     command: 'custom'
     custom: 'ef'
-    arguments: 'database update --project $(project) --configuration $(buildConfiguration) --connection "$(DatabaseConnectionString)"'
+    arguments: 'database update --project Chatty/Chatty.csproj --configuration $(buildConfiguration) --connection "$(DatabaseConnectionString)"'
 
 - task: DotNetCoreCLI@2
   name: 'Publish'
