@@ -18,7 +18,18 @@ variables:
   project: '**/Chatty/Chatty.csproj'
   DatabaseConnectionString: $(DATABASE_CONNECTION_STRING)
 
-
+steps:
+- task: NuGetToolInstaller@1
+  name: 'NuGetToolInstaller'
+  displayName: 'NuGet Tool Installer'
+  
+- task: NuGetCommand@2
+  name: 'NuGetRestore'
+  displayName: 'NuGet restore packages'
+  inputs:
+    command: 'restore'
+    restoreSolution: '$(solution)'
+    feedsToUse: 'select'
 - task: DotNetCoreCLI@2
   displayName: 'Apply EF Core Migrations'
   inputs:
