@@ -17,6 +17,7 @@ variables:
   buildConfiguration: 'Release'
   solution: '**/Chatty.sln'
   project: '**/Chatty/Chatty.csproj'
+  DatabaseConnectionString: 'Server=localhost//SQLExpress;Database=ChattyDb;Trusted_Connection=True;TrustServerCertificate=true;'
 
 steps:
 - task: NuGetToolInstaller@1
@@ -40,6 +41,22 @@ steps:
     command: 'test'
     projects: 'Chatty.UnitTests/Chatty.UnitTests.csproj'
     arguments: '--configuration $(BuildConfiguration)'
+
+# Optional: Install the dotnet-ef tool if not already available
+- task: DotNetCoreCLI@2
+  displayName: 'Install dotnet-ef tool'
+  inputs:
+    command: 'custom'
+    custom: 'tool'
+    arguments: 'install --global dotnet-ef --version 6.0.0'
+
+# Run EF Core Migrations
+- task: DotNetCoreCLI@2
+  displayName: 'Apply EF Core Migrations'
+  inputs:
+    command: 'custom'
+    custom: 'ef'
+    arguments: 'database update --project $(project) --configuration $(buildConfiguration) --connection "$(DatabaseConnectionString)"'
 
 - task: DotNetCoreCLI@2
   name: 'Publish'
