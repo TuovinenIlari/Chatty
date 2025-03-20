@@ -8,6 +8,7 @@ trigger:
 - none
 
 pool:
+  name: 'default'
   vmImage: 'windows-latest'
   
 
