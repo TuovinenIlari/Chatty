@@ -57,6 +57,8 @@ steps:
     publishLocation: 'Container'
 
 - task: AzureWebApp@1
+  name: 'PublishToWebApp'
+  displayName: 'Publish To WebApp'
   inputs:
     azureSubscription: 'Visual Studio Professional Subscription(996db5b0-e111-4ac6-bf42-2b196415c2b6)'
     appType: 'webApp'
@@ -64,5 +66,5 @@ steps:
     deployToSlotOrASE: true
     resourceGroupName: 'oppari'
     slotName: 'production'
-    package: '$Build.ArtifactStagingDirectory)/**/*.zip'
+    package: '$(Build.ArtifactStagingDirectory)/**/*.zip'
     deploymentMethod: 'auto'
