@@ -46,7 +46,7 @@ steps:
     command: 'publish'
     publishWebProjects: false
     arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
-    zipAfterPublish: false
+    zipAfterPublish: true
     
 - task: PublishBuildArtifacts@1
   name: 'PublishBuildArtifacts'
@@ -64,5 +64,5 @@ steps:
     deployToSlotOrASE: true
     resourceGroupName: 'oppari'
     slotName: 'production'
-    package: '$(System.DefaultWorkingDirectory)/**/*.zip'
+    package: '$Build.ArtifactStagingDirectory)/**/*.zip'
     deploymentMethod: 'auto'
