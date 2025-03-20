@@ -17,7 +17,7 @@ variables:
   buildConfiguration: 'Release'
   solution: '**/Chatty.sln'
   project: '**/Chatty/Chatty.csproj'
-  DatabaseConnectionString: 'Server=tcp:opparit1tuil00.database.windows.net,1433;Initial Catalog=chattydb;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=Active Directory Default;'
+  DatabaseConnectionString: $(DATABASE_CONNECTION_STRING)
 
 steps:
 - task: NuGetToolInstaller@1
