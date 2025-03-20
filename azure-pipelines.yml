@@ -17,7 +17,6 @@ variables:
   buildConfiguration: 'Release'
   solution: '**/Chatty.sln'
   project: '**/Chatty/Chatty.csproj'
-  DatabaseConnectionString: $(DATABASE_CONNECTION_STRING)
 
 steps:
 - task: NuGetToolInstaller@1
@@ -32,8 +31,6 @@ steps:
     restoreSolution: '$(solution)'
     feedsToUse: 'select'
 
-
-
 - task: DotNetCoreCLI@2
   name: 'Tests'
   displayName: 'Run tests'
@@ -41,16 +38,6 @@ steps:
     command: 'test'
     projects: 'Chatty.UnitTests/Chatty.UnitTests.csproj'
     arguments: '--configuration $(BuildConfiguration)'
-
-
-
-# Run EF Core Migrations
-- task: DotNetCoreCLI@2
-  displayName: 'Apply EF Core Migrations'
-  inputs:
-    command: 'custom'
-    custom: 'ef'
-    arguments: 'database update --project Chatty/Chatty.csproj --configuration $(buildConfiguration) --connection "$(DatabaseConnectionString)"'
 
 - task: DotNetCoreCLI@2
   name: 'Publish'
