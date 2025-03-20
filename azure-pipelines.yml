@@ -34,7 +34,7 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'custom'
-    custom: 'dotnet ef migrations script --output $(Build.SourcesDirectory)/SQL/tododbscript.sql --idempotent'
+    custom: 'dotnet ef migrations script --output $(Build.SourcesDirectory)\SQL\tododbscript.sql --idempotent'
 
 
 - task: DotNetCoreCLI@2
