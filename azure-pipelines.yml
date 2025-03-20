@@ -55,3 +55,13 @@ steps:
     ArtifactName: 'ChattyArtifact'
     publishLocation: 'Container'
 
+- task: AzureWebApp@1
+  inputs:
+    azureSubscription: 'Visual Studio Professional Subscription(996db5b0-e111-4ac6-bf42-2b196415c2b6)'
+    appType: 'webApp'
+    appName: 'oppari-chatty'
+    deployToSlotOrASE: true
+    resourceGroupName: 'oppari'
+    slotName: 'production'
+    package: '$(System.DefaultWorkingDirectory)/**/*.zip'
+    deploymentMethod: 'auto'
