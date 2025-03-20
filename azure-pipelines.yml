@@ -42,13 +42,7 @@ steps:
     projects: 'Chatty.UnitTests/Chatty.UnitTests.csproj'
     arguments: '--configuration $(BuildConfiguration)'
 
-# Optional: Install the dotnet-ef tool if not already available
-- task: DotNetCoreCLI@2
-  displayName: 'Install dotnet-ef tool'
-  inputs:
-    command: 'custom'
-    custom: 'tool'
-    arguments: 'install --global dotnet-ef --version 6.0.0'
+
 
 # Run EF Core Migrations
 - task: DotNetCoreCLI@2
